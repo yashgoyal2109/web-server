@@ -1,3 +1,4 @@
+// ./steps/step003.c
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdio.h>
@@ -28,6 +29,13 @@ int main() {
         return 1;
     }
     printf("socket successfully bound to address\n");
+
+    // Listen for incoming connections
+    if (listen(sockfd, SOMAXCONN) != 0) {
+        perror("webserver (listen)");
+        return 1;
+    }
+    printf("server listening for connections\n");
 
     return 0;
 }
