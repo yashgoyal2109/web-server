@@ -1,4 +1,3 @@
-// ./steps/step004.c
 #include <arpa/inet.h>
 #include <errno.h>
 #include <stdio.h>
@@ -6,8 +5,11 @@
 #include <unistd.h>
 
 #define PORT 8080
+#define BUFFER_SIZE 1024
 
 int main() {
+    char buffer[BUFFER_SIZE];
+
     // Create a socket
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
@@ -47,6 +49,13 @@ int main() {
             continue;
         }
         printf("connection accepted\n");
+
+        // Read from the socket
+        int valread = read(newsockfd, buffer, BUFFER_SIZE);
+        if (valread < 0) {
+            perror("webserver (read)");
+            continue;
+        }
 
         close(newsockfd);
     }
