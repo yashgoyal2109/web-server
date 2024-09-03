@@ -31,6 +31,10 @@ int main() {
     host_addr.sin_port = htons(PORT);
     host_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+    // Create client address
+    struct sockaddr_in client_addr;
+    int client_addrlen = sizeof(client_addr);
+
     // Bind the socket to the address
     if (bind(sockfd, (struct sockaddr *)&host_addr, host_addrlen) != 0) {
         perror("webserver (bind)");
@@ -55,12 +59,22 @@ int main() {
         }
         printf("connection accepted\n");
 
+        // Get client address
+        int sockn = getsockname(newsockfd, (struct sockaddr *)&client_addr,
+                                (socklen_t *)&client_addrlen);
+        if (sockn < 0) {
+            perror("webserver (getsockname)");
+            continue;
+        }
+
         // Read from the socket
         int valread = read(newsockfd, buffer, BUFFER_SIZE);
         if (valread < 0) {
             perror("webserver (read)");
             continue;
         }
+        printf("[%s:%u]\n", inet_ntoa(client_addr.sin_addr),
+               ntohs(client_addr.sin_port));
 
         // Write to the socket
         int valwrite = write(newsockfd, resp, strlen(resp));
