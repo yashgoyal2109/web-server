@@ -73,8 +73,12 @@ int main() {
             perror("webserver (read)");
             continue;
         }
-        printf("[%s:%u]\n", inet_ntoa(client_addr.sin_addr),
-               ntohs(client_addr.sin_port));
+
+        // Read the request
+        char method[BUFFER_SIZE], uri[BUFFER_SIZE], version[BUFFER_SIZE];
+        sscanf(buffer, "%s %s %s", method, uri, version);
+        printf("[%s:%u] %s %s %s\n", inet_ntoa(client_addr.sin_addr),
+               ntohs(client_addr.sin_port), method, version, uri);
 
         // Write to the socket
         int valwrite = write(newsockfd, resp, strlen(resp));
